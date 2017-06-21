@@ -1,0 +1,79 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.breeze.p2pcam.SearchFragment">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="left|top">
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="3"
+
+            android:layout_gravity="left|top">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_margin="1dp"
+                android:text="Scan"
+                android:id="@+id/btnScan"
+                android:layout_weight="1.00"
+                android:background="@drawable/panel_bg"
+                 />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_margin="1dp"
+                android:text="Manual"
+                android:layout_weight="1"
+                android:id="@+id/btnManual"
+                 />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_margin="1dp"
+                android:text="Auto"
+                android:background="@drawable/panel_bg"
+                android:id="@+id/btnAuto"
+
+                android:layout_weight="1"
+                />
+        </LinearLayout>
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/listDevice" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/scrollView"
+            android:layout_gravity="center_horizontal" />
+
+    </LinearLayout>
+    <FrameLayout
+        android:id="@+id/progressBarHolder"
+
+        android:animateLayoutChanges="true"
+
+        android:clickable="true"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ProgressBar
+            android:layout_gravity="center"
+            android:id="@+id/progress_bar"
+            android:alpha="0.9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:progressDrawable="@drawable/progress_large_white" />
+    </FrameLayout>
+</FrameLayout>
