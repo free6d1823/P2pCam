@@ -5,7 +5,9 @@
 /src/main/res/drawable
 /src/main/res/values
 /src/main/jniLibs
-/src/main/java/tutk
+/src/main/java/com/tutk
+/src/main/java/com/google
+/src/main/java/com/breeze/qrcode
 /src/main/java/com/breeze/youcam/AboutFragment.java
 /src/main/java/com/breeze/youcam/BaseFragment.java
 /src/main/java/com/breeze/youcam/Config.java
