@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.breeze.p2pcam.AboutFragment">
+    tools:context="com.breeze.youcam.AboutFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
@@ -28,6 +28,13 @@
             android:text="1.2.3.4"
             android:textColor="@color/colorText2"
             android:textSize="18sp" />
-
+        <TextView
+            android:id="@+id/tvNativeVersion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="1.0.0.0"
+            android:textColor="@color/colorText2"
+            android:textSize="18sp" />
     </LinearLayout>
 </FrameLayout>

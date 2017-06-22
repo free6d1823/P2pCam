@@ -5,19 +5,37 @@
 
 cmake_minimum_required(VERSION 3.4.1)
 
-# Creates and names a library, sets it as either STATIC
-# or SHARED, and provides the relative paths to its source code.
-# You can define multiple libraries, and CMake builds them for you.
-# Gradle automatically packages shared libraries with your APK.
+# configure import libs
+set(distribution_DIR ${CMAKE_SOURCE_DIR}/../ffmpeg-android)
 
-add_library( # Sets the name of the library.
-             native-lib
+add_library(lib_avformat STATIC IMPORTED)
+set_target_properties(lib_avformat PROPERTIES IMPORTED_LOCATION
+    ${distribution_DIR}/${ANDROID_ABI}/lib/libavformat.a)
 
-             # Sets the library as a shared library.
-             SHARED
+add_library(lib_avcodec STATIC IMPORTED)
+set_target_properties(lib_avcodec PROPERTIES IMPORTED_LOCATION
+    ${distribution_DIR}/${ANDROID_ABI}/lib/libavcodec.a)
 
-             # Provides a relative path to your source file(s).
-             src/main/cpp/native-lib.cpp )
+add_library(lib_swscale STATIC IMPORTED)
+set_target_properties(lib_swscale PROPERTIES IMPORTED_LOCATION
+    ${distribution_DIR}/${ANDROID_ABI}/lib/libswscale.a)
+add_library(lib_avutil STATIC IMPORTED)
+set_target_properties(lib_avutil PROPERTIES IMPORTED_LOCATION
+    ${distribution_DIR}/${ANDROID_ABI}/lib/libavutil.a)	
+# now build app's shared lib
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
+
+add_library(native-lib SHARED
+             src/main/cpp/native-lib.cpp
+			 src/main/cpp/RingBuffer.cpp
+			 src/main/cpp/vdecoder.cpp)
+			 
+target_include_directories(native-lib PRIVATE
+	${distribution_DIR}/include
+	)
+
+				 
+ 
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by
@@ -32,13 +50,14 @@ find_library( # Sets the name of the path variable.
               # you want CMake to locate.
               log )
 
-# Specifies libraries CMake should link to your target library. You
-# can link multiple libraries, such as libraries you define in this
-# build script, prebuilt third-party libraries, or system libraries.
 
-target_link_libraries( # Specifies the target library.
-                       native-lib
-
-                       # Links the target library to the log library
-                       # included in the NDK.
-                       ${log-lib} )
+# add lib dependencies
+target_link_libraries(native-lib
+                      android
+                      ${log-lib} 
+                      EGL
+					  lib_avformat
+					  lib_avcodec
+					  lib_swscale
+					  lib_avutil
+                      GLESv2)
