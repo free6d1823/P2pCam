@@ -3,7 +3,8 @@
 /src/test
 /src/androidTest
 /src/main/res/drawable
-/src/main/res/values
+/src/main/res/values/raw
+/src/main/res/values/mipmap*
 /src/main/jniLibs
 /src/main/java/com/tutk
 /src/main/java/com/google
