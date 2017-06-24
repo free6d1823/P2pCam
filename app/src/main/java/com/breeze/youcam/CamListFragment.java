@@ -104,11 +104,16 @@ public class CamListFragment extends BaseFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 DeviceInfo di = (DeviceInfo)MainActivity.mPairedList.getItem(position);
-                //if(di.status >= di.STATUS_CONNECTED) {
+                if(di.status == di.STATUS_NONE) {
+                    Intent intent = new Intent(MainActivity.gApp, PairingActivity.class);
+                    intent.putExtra(MainActivity.EXTRA_DEVICE_DETAIL, di.uuid);
+                    startActivity(intent);
+                }
+                else if(di.status >= di.STATUS_CONNECTED) {
                     Intent intent = new Intent(MainActivity.gApp, LiveActivity.class);
                     intent.putExtra(MainActivity.EXTRA_DEVICE_DETAIL, di.uuid);
                     startActivity(intent);
-                //}//
+                }//
             }
         });
 

@@ -30,8 +30,9 @@
     <string name="title_activity_live">Live View</string>
     <string name="title_activity_capture">QR Code Sanner</string>
     <string name="title_activity_event_list_fragment">EventListFragment</string>
-  <string name="permit_access_camera">You need to allow access to Camera to use QR code Scanner</string>
-<string name="msg_default_status">Place a barcode inside the viewfinder rectangle to scan it.</string>
- 
+    <string name="permit_access_camera">You need to allow access to Camera to use QR code Scanner</string>
+    <string name="msg_default_status">Place a barcode inside the viewfinder rectangle to scan it.</string>
+    <string name="title_activity_pairing">Add Devices</string>
+
 
 </resources>

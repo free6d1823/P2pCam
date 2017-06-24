@@ -19,6 +19,7 @@
     <style name="MyTheme.ActionBar.TitleTextStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
         <item name="android:textColor">@color/colorTextNormal</item>
     </style>
+
     <style name="ButtonColor" parent="@android:style/Widget.Button">
         <item name="android:textColor">@color/colorTextNormal</item>
         <item name="android:background">@drawable/panel_bg</item>
@@ -26,6 +27,7 @@
 
 
     </style>
+
     <style name="myCustomMenuTextApearance" parent="@android:style/TextAppearance.Widget.IconMenu.Item">
         <item name="android:textColor">@color/colorDialog</item>
         <item name="android:background">@color/colorText3</item>
@@ -33,4 +35,13 @@
 
 
     </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

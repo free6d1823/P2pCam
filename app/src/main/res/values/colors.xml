@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
+    <!-- Guarding Stone Style /!-->
+    <color name="colorPrimary">#101671</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#B60043</color>
     <color name="colorBkgnd1">#000000</color>
-    <color name="colorBkgnd2">#080b56</color>
-    <color name="colorPanel1">#153481</color>
-    <color name="colorPanel2">#2159a6</color>
-    <color name="colorDialog">#1e7aa1</color>
+    <color name="colorBkgnd2">#193b8b</color>
+    <color name="colorPanel1">#193b8b</color>
+    <color name="colorPanel2">#2383BA</color>
+    <color name="colorDialog">#5c3b99</color>
     <color name="colorTextNormal">#ffffff</color>
-    <color name="colorText2">#cfedd8</color>
-    <color name="colorText3">#d9f0bd</color>
-	  <color name="contents_text">#ff000000</color>
+    <color name="colorText2">#d3dddf</color>
+    <color name="colorText3">#287b40</color>
+    <color name="contents_text">#ff000000</color>
+
   <color name="encode_view">#ffffffff</color>
-  <color name="possible_result_points">#c0ffcd21</color> <!-- Android standard ICS color -->
-  <color name="result_minor_text">#ffc0c0c0</color>
-  <color name="result_points">#c099cc00</color> <!-- Android standard ICS color -->
+  <color name="possible_result_points">#c05c3b99</color>
+  <color name="result_minor_text">#ffd3dddf</color>
+  <color name="result_points">#c0287b40</color>
   <color name="result_text">#ffffffff</color>
   <color name="result_view">#b0000000</color>
-  <color name="status_text">#ffffffff</color>
+  <color name="status_text">#ffd3dddf</color>
   <color name="transparent">#00000000</color>
-  <color name="viewfinder_laser">#eefd4747</color> <!-- Android standard ICS color -->
+  <color name="viewfinder_laser">#B60043</color>
   <color name="viewfinder_mask">#60000000</color>
 </resources>

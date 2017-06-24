@@ -16,7 +16,7 @@
     <TextView
         android:text="@string/title_add_device_dialog"
         android:textSize="30dp"
-        android:textColor="@color/colorText3"
+        android:textColor="@color/colorDialog"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:background="@drawable/panel_bg"
@@ -27,7 +27,7 @@
     <TextView
         android:text=""
         android:textSize="30dp"
-        android:textColor="@color/colorText2"
+        android:textColor="@color/colorTextNormal"
         android:layout_width="match_parent"
         android:layout_height="40dp"
 
@@ -45,12 +45,14 @@
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:textSize="16sp"
+            android:textColor="@color/colorTextNormal"
             android:text="Device Name" />
         <TextView
             android:id="@+id/tvName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16sp"
+            android:textColor="@color/colorText2"
             android:text="Camera" />
     </LinearLayout>
     <LinearLayout
@@ -64,15 +66,16 @@
         <TextView
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-
+            android:textColor="@color/colorTextNormal"
             android:text="UUID" />
+
         <EditText
             android:id="@+id/etUuid"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="16"
-            android:textColor="@color/colorText3"
-            android:inputType="textCapCharacters" />
+            android:inputType="textCapCharacters"
+            android:textColor="@color/colorText2" />
     </LinearLayout>
     <LinearLayout
         android:layout_width="wrap_content"
@@ -85,14 +88,14 @@
         <TextView
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-
+            android:textColor="@color/colorTextNormal"
             android:text="User" />
         <EditText
             android:id="@+id/etUser"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="16"
-            android:textColor="@color/colorText3"
+            android:textColor="@color/colorText2"
             android:inputType="textCapCharacters" />
     </LinearLayout>
     <LinearLayout
@@ -106,14 +109,14 @@
         <TextView
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-
+            android:textColor="@color/colorTextNormal"
             android:text="Password" />
         <EditText
             android:id="@+id/etPassword"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="16"
-            android:textColor="@color/colorText3"
+            android:textColor="@color/colorText2"
             android:inputType="textPassword" />
     </LinearLayout>
     <LinearLayout
@@ -126,7 +129,7 @@
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-
+            android:textColor="@color/colorTextNormal"
             android:text="IP" />
         <TextView
             android:id="@+id/tvIp"
@@ -147,6 +150,7 @@
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:textSize="16sp"
+            android:textColor="@color/colorTextNormal"
             android:text="Port" />
         <TextView
             android:id="@+id/tvPort"
@@ -174,7 +178,7 @@
             android:layout_weight="0.5"
             android:paddingBottom="8dp"
             android:paddingTop="8dp"
-            android:textColor="@color/colorTextNormal"
+            android:textColor="@color/colorDialog"
             android:text="Add" />
 
         <Button
@@ -186,7 +190,7 @@
             android:layout_weight="0.5"
             android:paddingBottom="8dp"
             android:paddingTop="8dp"
-            android:textColor="@color/colorTextNormal"
+            android:textColor="@color/colorDialog"
             android:text="Cancel" />
     </LinearLayout>
 </LinearLayout>
