@@ -1,5 +1,6 @@
 package com.breeze.youcam;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,14 +25,21 @@ import com.tutk.IOTC.st_SearchDeviceInfo;
 
 import java.io.UnsupportedEncodingException;
 
-public class PairingActivity extends AppCompatActivity {
+public class PairingActivity extends Activity {
     final String TAG = "P2pMain";
+    public static final String ARG_DI_SLOT = "DiSlotNum"; //index of desired paired slot id
+    public int mDiSlotNum = 0;
     FrameLayout mProgressBar;
     DeviceList mDeviceList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pairing);
+
+        Intent intent = getIntent();
+        mDiSlotNum = intent.getIntExtra(ARG_DI_SLOT, -1);
+        Log.d(TAG, "PairingActivity Di Slot is "+ mDiSlotNum);
+
         mProgressBar = (FrameLayout) findViewById(R.id.progressBarHolder);
         mDeviceList = new DeviceList(this);
         ListView lv = (ListView) findViewById(R.id.listDevice);
@@ -92,10 +100,13 @@ public class PairingActivity extends AppCompatActivity {
                     return false;
                 int act = item.getItemId();
                 if (act == MENU_ADD) {
-
-                    sel.status = DeviceInfo.STATUS_PAIRED;
-                    mDeviceList.notifyDataSetChanged();
-                    MainActivity.mPairedList.addItem(0, sel);
+                    DeviceInfo di = (DeviceInfo) MainActivity.mPairedList.getItem(mDiSlotNum);
+                    if(di != null) {
+                        sel.status = DeviceInfo.STATUS_PAIRED;
+                        di.copy(sel);
+                        mDeviceList.notifyDataSetChanged();
+                        MainActivity.mPairedList.notifyDataSetChanged();
+                    }
                 }
                 return true;
             }

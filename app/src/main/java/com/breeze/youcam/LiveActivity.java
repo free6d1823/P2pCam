@@ -11,7 +11,7 @@ import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-public class LiveActivity extends Activity {
+public class LiveActivity extends Activity implements P2pClient.OnP2pDataListener{
     final String TAG = "P2pMain";
     DeviceInfo mDi = null;
     FrameLayout mProgressBar;
@@ -81,14 +81,28 @@ public class LiveActivity extends Activity {
                 break;
             case R.id.tvStatus:
                 if(mDi != null) {
-                    if (mDi.status == mDi.STATUS_STARTED)
+                    if (mDi.status == mDi.STATUS_STARTED) {
                         mDi.stop();
-                    else
-                        mDi.start();
+
+                    }
+                    else {
+                        mDi.start(this);
+
+                    }
                 }
                 break;
 
         }
+    }
+
+    @Override
+    public void onVideoCallback(byte[] buffer, int length, int timestamp) {
+
+    }
+
+    @Override
+    public void onAudioCallback(byte[] buffer, int length, int timestamp) {
+
     }
 
     public class MyRunnable implements Runnable {
@@ -112,7 +126,7 @@ public class LiveActivity extends Activity {
                         di.login();
                         command = R.id.cmd_start_stream;
                     } else if (di.status == di.STATUS_CONNECTED) {
-                        di.start();
+                        di.start(LiveActivity.this);
                         mProgressBar.setVisibility(View.GONE);
                         MainActivity.mPairedList.notifyDataSetChanged();
 

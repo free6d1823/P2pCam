@@ -106,7 +106,7 @@ public class CamListFragment extends BaseFragment {
                 DeviceInfo di = (DeviceInfo)MainActivity.mPairedList.getItem(position);
                 if(di.status == di.STATUS_NONE) {
                     Intent intent = new Intent(MainActivity.gApp, PairingActivity.class);
-                    intent.putExtra(MainActivity.EXTRA_DEVICE_DETAIL, di.uuid);
+                    intent.putExtra(PairingActivity.ARG_DI_SLOT, position);
                     startActivity(intent);
                 }
                 else if(di.status >= di.STATUS_CONNECTED) {
@@ -149,8 +149,8 @@ public class CamListFragment extends BaseFragment {
                         mHandler.sendMessage(msg);
                         break;
                     case MENU_REMOVE:
-                        hdi.remove();
-                        MainActivity.mPairedList.removeItem(k);
+                        hdi.remove(); //set as STATUS_NONE
+                        MainActivity.mPairedList.notifyDataSetChanged();
                         msg = new Message();
                         msg.what = MESSAGE_UPDATE_LISTVIEW;
                         mHandler.sendMessage(msg);

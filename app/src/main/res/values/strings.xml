@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">You Camera</string>
+    <string name="app_name">YouCam</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="api_version">API Version:</string>
@@ -21,10 +21,10 @@
     <string name="action_start">Start</string>
     <string name="action_stop">Stop</string>
     <string name="title_activity_detail">Device Information</string>
-    <string name="title_page1">You Camera</string>
+    <string name="title_page1">YouCam</string>
     <string name="title_page2">Event list</string>
     <string name="title_page3">Playback</string>
-    <string name="title_page4">Pairing</string>
+    <string name="title_page4">Setup Device</string>
     <string name="title_page5">About</string>
     <string name="title_add_device_dialog">Add Device</string>
     <string name="title_activity_live">Live View</string>
@@ -33,6 +33,11 @@
     <string name="permit_access_camera">You need to allow access to Camera to use QR code Scanner</string>
     <string name="msg_default_status">Place a barcode inside the viewfinder rectangle to scan it.</string>
     <string name="title_activity_pairing">Add Devices</string>
-
+    <string name="setup_description1">Configure the WiFi setting of the remote devices.</string>
+    <string name="setup_description2">First reset the device. Select one of the methods below:\n</string>
+    <string name="setup_method1">AP mode</string>
+    <string name="setup_method2">Sound Wave coding</string>
+    <string name="setup_method3">Scanning QR code</string>
+    <string name="title_activity_wifi_setup">Select a Wifi AP to connect</string>
 
 </resources>

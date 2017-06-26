@@ -1,0 +1,57 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    tools:context="com.breeze.youcam.SetupFragment">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/page_bg"
+        android:layout_gravity="left|top">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_margin="1dp"
+            android:text="@string/setup_description1"
+            android:id="@+id/tvDescription1"
+            android:textColor="@color/colorTextNormal" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="61dp"
+            android:layout_margin="1dp"
+            android:text="@string/setup_description2"
+            android:id="@+id/tvDescription2"
+            android:textColor="@color/colorText2" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_margin="1dp"
+            android:text="@string/setup_method1"
+            android:id="@+id/btnMethod1"
+            android:layout_weight="2.00"
+            android:background="@drawable/panel_bg"
+             />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_margin="1dp"
+            android:text="@string/setup_method2"
+            android:id="@+id/btnMethod2"
+            android:layout_weight="2.00"
+            android:background="@drawable/panel_bg"
+            />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_margin="1dp"
+            android:text="@string/setup_method2"
+            android:id="@+id/btnMethod3"
+            android:layout_weight="2.00"
+            android:background="@drawable/panel_bg"
+            />
+      </LinearLayout>
+
+</FrameLayout>
