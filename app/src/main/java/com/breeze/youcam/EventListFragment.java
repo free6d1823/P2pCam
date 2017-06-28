@@ -9,16 +9,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.breeze.tools.RecordUtility;
 import com.tutk.IOTC.IOTCAPIs;
 import com.tutk.IOTC.st_SearchDeviceInfo;
 
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
-public class EventListFragment extends BaseFragment {
+public class EventListFragment extends BaseFragment implements RecordUtility.OnDataFound{
 
     /**
      * Use this factory method to create a new instance of
@@ -30,6 +35,11 @@ public class EventListFragment extends BaseFragment {
      */
     // TODO: Rename and change types and number of parameters
     EventList mEventList;
+    Button mBtnA;
+    Button mBtnB;
+    TextView mTvDate;
+    Date mTmStart;
+    long mTmDuration; //in ms
     public static EventListFragment newInstance(String param1, String param2) {
         EventListFragment fragment = new EventListFragment();
         //Bundle args = new Bundle();
@@ -45,7 +55,7 @@ public class EventListFragment extends BaseFragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_event_list, container, false);
         initUi(view);
-        startReflesh();
+
 
         return view;
     }
@@ -79,51 +89,62 @@ public class EventListFragment extends BaseFragment {
                 //}//
             }
         });
-    }
-    public final int MESSAGE_UPDATE_ADDITEM = 100;
-    public final int MESSAGE_UPDATE_REFLESH_DONE = 101;
-    Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
+        //
+        mBtnA = (Button) view.findViewById(R.id.btnPrev);
+        mBtnB = (Button) view.findViewById(R.id.btnNext);
+        mTvDate = (TextView) view.findViewById(R.id.tvDate);
+        mBtnA.setOnClickListener(new View.OnClickListener(){
 
-            switch(msg.what){
-                case MESSAGE_UPDATE_ADDITEM:
-                    EventItem di = (EventItem) msg.obj;
-                    mEventList.addItem(0, di);
-                    mEventList.notifyDataSetChanged();
-                    break;
-                case MESSAGE_UPDATE_REFLESH_DONE:
-                    mProgressBar.setVisibility(View.GONE);
-                    break;
+            @Override
+            public void onClick(View v) {
+                mTmStart = new Date(mTmStart.getTime() - mTmDuration);
+
+                startReflesh();
             }
-        }
+        });
+        mBtnB.setOnClickListener(new View.OnClickListener(){
 
-    };
+            @Override
+            public void onClick(View v) {
+                mTmStart = new Date(mTmStart.getTime() + mTmDuration);
+
+                startReflesh();
+            }
+        });
+        Calendar now = Calendar.getInstance();
+
+        now.set(Calendar.HOUR_OF_DAY, 0);
+        now.set(Calendar.MINUTE, 0);
+        now.set(Calendar.SECOND, 0);
+        mTmStart = now.getTime();
+        mTmDuration = 60*60*24*1000;
+        startReflesh();
+
+
+
+    }
+
     void startReflesh(){
+        SimpleDateFormat formatter
+                = new SimpleDateFormat("yyyy MMMM dd  EEEE");
+        String dateString = formatter.format(mTmStart);
+        mTvDate.setText(dateString);
+
         mProgressBar.setVisibility(View.VISIBLE);
         mEventList.resetItem();
         mEventList.notifyDataSetChanged();
-        Thread reflesh = new Thread( new Runnable() {
+        RecordUtility.startReflesh(mTmStart, mTmDuration, this);
 
-            @Override
-            public void run() {
-                for (int i = 0; i < 20; i++) {
+    }
 
-                    Message msg = new Message();
-                    msg.what = MESSAGE_UPDATE_ADDITEM;
-                    msg.obj = new EventItem(i % 8, "name" + i, "AAAA" + i);
-                    mHandler.sendMessage(msg);
-                    try {
-                        Thread.sleep(200);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                Message msg = new Message();
-                msg.what = MESSAGE_UPDATE_REFLESH_DONE;
-                mHandler.sendMessage(msg);
-            }
-        }, "reflesh Thread");
-        reflesh.start();
+    @Override
+    public boolean onDataFound(EventItem item) {
+        if (item == null)
+            mProgressBar.setVisibility(View.GONE);
+        else {
+            mEventList.addItem(0, item);
+            mEventList.notifyDataSetChanged();
+        }
+        return false;
     }
 }

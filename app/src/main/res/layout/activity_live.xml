@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
 
-    android:background="@color/colorBkgnd1"
+    android:background="@color/colorBkgnd2"
     tools:context="com.breeze.youcam.LiveActivity">
 
     <LinearLayout
@@ -67,7 +67,7 @@
             android:layout_margin="1dp"
             android:layout_weight="1"
             android:layout_gravity="center_vertical"
-            android:background="@color/colorPanel1"
+            android:background="@color/colorBkgnd1"
             android:text="V:0kbps" />
         <TextView
             android:id="@+id/tvAbps"
@@ -76,7 +76,7 @@
             android:layout_margin="1dp"
             android:layout_weight="1"
             android:layout_gravity="center_vertical"
-            android:background="@color/colorPanel1"
+            android:background="@color/colorBkgnd1"
             android:text="A:0kbps" />
 
         <TextView
@@ -87,7 +87,7 @@
             android:layout_weight="1"
             android:layout_gravity="center_vertical|end"
             android:textAlignment="viewEnd"
-            android:background="@color/colorPanel1"
+            android:background="@color/colorBkgnd1"
             android:text="0f/s" />
         <TextView
             android:id="@+id/tvStatus"
@@ -98,7 +98,7 @@
             android:onClick="onClick"
             android:layout_gravity="center_vertical|end"
             android:textAlignment="viewEnd"
-            android:background="@color/colorPanel1"
+            android:background="@color/colorBkgnd1"
             android:text="connected" />
     </LinearLayout>
     <LinearLayout
@@ -107,37 +107,37 @@
         android:orientation="horizontal">
         <Button
             android:id="@+id/btnSnapshot"
-            android:layout_width="wrap_content"
+            android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_margin="1dp"
-            android:layout_weight="1"
-            android:background="@drawable/panel_bg"
-            android:onClick="onClick"
-            android:text="Snapshot" />
+            android:layout_margin="4dp"
+
+            android:background="@drawable/btn_snapshot_off"
+            android:onClick="onClickSnapshot"
+             />
         <Button
             android:id="@+id/btnSkeaker"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
-            android:layout_margin="1dp"
-            android:layout_weight="1"
-            android:background="@drawable/panel_bg"
-            android:text="Speaker" />
+            android:layout_margin="4dp"
+            android:onClick="onClickSpeaker"
+            android:background="@drawable/btn_speaker_off"
+            />
         <Button
             android:id="@+id/btnMic"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
-            android:layout_margin="1dp"
-            android:layout_weight="1"
-            android:background="@drawable/panel_bg"
-            android:text="Talk" />
+            android:layout_margin="4dp"
+            android:onClick="onClickMic"
+            android:background="@drawable/btn_mic_off"
+             />
         <Button
             android:id="@+id/btnRecord"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
-            android:layout_margin="1dp"
-            android:layout_weight="1"
-            android:background="@drawable/panel_bg"
-            android:text="Record" />
+            android:layout_margin="4dp"
+            android:onClick="onClickRecord"
+            android:background="@drawable/btn_record_off"
+             />
     </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"

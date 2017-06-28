@@ -1,8 +1,10 @@
 package com.breeze.youcam;
 
 import android.content.Intent;
+import android.icu.text.AlphabeticIndex;
 import android.os.Bundle;
 import android.app.Activity;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -10,6 +12,15 @@ import android.view.View;
 import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
+import com.breeze.tools.FileData;
+import com.breeze.tools.RecordUtility;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Calendar;
 
 public class LiveActivity extends Activity implements P2pClient.OnP2pDataListener{
     final String TAG = "P2pMain";
@@ -19,6 +30,12 @@ public class LiveActivity extends Activity implements P2pClient.OnP2pDataListene
     TextView mTvAbps;
     TextView mTvFps;
     TextView mTvStatus;
+
+    boolean mIsRecordOn = false;
+    boolean mIsSnapshotOn = false;
+    boolean mIsMicOn = false;
+    boolean mIsSpeakerOn = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,14 +86,6 @@ public class LiveActivity extends Activity implements P2pClient.OnP2pDataListene
                 break;
             case R.id.btnMirror:
                 break;
-            case R.id.btnSnapshot:
-                break;
-            case R.id.btnSkeaker:
-                break;
-            case R.id.btnMic:
-                break;
-            case R.id.btnRecord:
-                break;
             case R.id.btnMode:
                 break;
             case R.id.tvStatus:
@@ -93,16 +102,6 @@ public class LiveActivity extends Activity implements P2pClient.OnP2pDataListene
                 break;
 
         }
-    }
-
-    @Override
-    public void onVideoCallback(byte[] buffer, int length, int timestamp) {
-
-    }
-
-    @Override
-    public void onAudioCallback(byte[] buffer, int length, int timestamp) {
-
     }
 
     public class MyRunnable implements Runnable {
@@ -163,8 +162,8 @@ public class LiveActivity extends Activity implements P2pClient.OnP2pDataListene
 
                         mLastVBytes = p2p.mVideoTotalBytes;
 
-                        bps = (p2p.mAudioTotalBytes- mLastABytes) /dT;//Kbps
-                        mTvAbps.setText("A:"+bps+"kbps");
+                        bps = (p2p.mAudioTotalBytes- mLastABytes)*1000 /dT;//Kbps
+                        mTvAbps.setText("A:"+bps+"bps");
                         mLastABytes = p2p.mAudioTotalBytes;
 
                         bps = (p2p.mTotalFrames- mLastFrame)*1000 /dT;//fps
@@ -197,4 +196,81 @@ public class LiveActivity extends Activity implements P2pClient.OnP2pDataListene
         mRunnable = new MyRunnable(mDi, R.id.cmd_stop_stream);
         mHandler.post(mRunnable);
     }
+
+    FileData mVideoRecordFile = null;
+    FileData mAudioRecordFile = null;
+    public void onClickSnapshot(View v) {
+        mIsSnapshotOn = !mIsSnapshotOn;
+
+        v.setBackgroundResource(mIsSnapshotOn? R.drawable.btn_snapshot_on: R.drawable.btn_snapshot_off);
+
+    }
+    public void onClickRecord(View v) {
+        mIsRecordOn = !mIsRecordOn;
+        if (mIsRecordOn == false){
+            if (mVideoRecordFile != null) {
+                mVideoRecordFile.close();
+                mVideoRecordFile = null;
+            }
+            if (mAudioRecordFile != null) {
+                mAudioRecordFile.close();
+                mAudioRecordFile = null;
+            }
+        }
+        v.setBackgroundResource(mIsRecordOn? R.drawable.btn_record_on: R.drawable.btn_record_off);
+    }
+    public void onClickMic(View v) {
+        mIsMicOn = !mIsMicOn;
+
+        v.setBackgroundResource(mIsMicOn? R.drawable.btn_mic_on: R.drawable.btn_mic_off);
+
+    }
+    public void onClickSpeaker(View v) {
+        mIsSpeakerOn = !mIsSpeakerOn;
+
+        v.setBackgroundResource(mIsSpeakerOn? R.drawable.btn_speaker_on: R.drawable.btn_speaker_off);
+
+    }
+
+    @Override
+    public void onVideoCallback(byte[] buffer, int length, int timestamp) {
+        if (mIsRecordOn) {
+            if (mVideoRecordFile == null) {
+                mVideoRecordFile = RecordUtility.createFile(EventItem.TYPE_LOCAL_VIDEO, true);
+                if (mVideoRecordFile == null)
+                    return;
+                Log.d(TAG, "Create video file: "+mVideoRecordFile.getFileName());
+                //open audio
+                if(mAudioRecordFile != null)
+                    mAudioRecordFile.close();
+                mAudioRecordFile = RecordUtility.createFile(EventItem.TYPE_LOCAL_VIDEO, false);
+                if (mAudioRecordFile == null)
+                    Log.e(TAG, "Failed to create audio file: "+mAudioRecordFile.getFileName());
+            }
+            mVideoRecordFile.write(buffer);
+            //check if need close
+            mVideoRecordFile = RecordUtility.checkFileClose(mVideoRecordFile);
+            if(null == mVideoRecordFile){
+                Log.d(TAG, "Video file closed.");
+                //check if need close
+                mAudioRecordFile.close();
+                mAudioRecordFile = null;
+                Log.d(TAG, "Audio file closed too.");
+
+            }
+        }
+        //decode and display
+    }
+
+    @Override
+    public void onAudioCallback(byte[] buffer, int length, int timestamp) {
+        if (mIsRecordOn) {
+            if (mAudioRecordFile == null) {
+                return; //audio must always follow video
+            }
+            mAudioRecordFile.write(buffer);
+
+        }
+    }
+
 }

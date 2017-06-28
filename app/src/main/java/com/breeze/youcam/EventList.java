@@ -67,12 +67,12 @@ public class EventList extends BaseAdapter {
             di = mEventArray.get(position);
             ImageView imageView = (ImageView) itemView.findViewById(R.id.ivType);
             TextView nameView = (TextView) itemView.findViewById(R.id.tvName);
-            TextView uuidView = (TextView) itemView.findViewById(R.id.tvUuid);
+
             TextView timeView = (TextView) itemView.findViewById(R.id.tvTime);
             TextView noteView = (TextView) itemView.findViewById(R.id.tvNote);
             imageView.setImageResource(di.getTypeResourceId());
             nameView.setText(di.name);
-            uuidView.setText(di.uuid);
+
             timeView.setText(di.timeString());
 
             noteView.setText(di.note);

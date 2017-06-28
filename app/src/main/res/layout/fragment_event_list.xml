@@ -8,6 +8,7 @@
 
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/colorBkgnd2"
         android:layout_gravity="left|top">
     <LinearLayout
         android:id="@+id/layoutTime"
@@ -16,21 +17,24 @@
         android:layout_height="wrap_content"
         android:layout_gravity="left|top">
 
-        <Button
-            android:id="@+id/btnYear"
+        <TextView
+            android:id="@+id/tvDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:text = "2017/06/27"
+            android:layout_weight="2" />
 
         <Button
-            android:id="@+id/btnMonth"
+            android:id="@+id/btnPrev"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text = "-"
             android:layout_weight="1" />
         <Button
-            android:id="@+id/btnDay"
+            android:id="@+id/btnNext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text = "+"
             android:layout_weight="1" />
     </LinearLayout>
     <ScrollView   android:layout_width="match_parent"
