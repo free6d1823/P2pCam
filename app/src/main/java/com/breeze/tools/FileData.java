@@ -19,9 +19,8 @@ public class FileData {
     public long tmStart;
     public String getFileName() { return file.getPath();}
 
-    public FileData(int type, boolean bIsVideo) throws  IOException{
+    public FileData(Calendar tmNow, int type, boolean bIsVideo) throws  IOException{
 
-        Calendar tmNow = Calendar.getInstance();
         String date = RecordUtility.getFolderName(tmNow);
 
         File folder = new File(RecordUtility.getWorkingFolder(), date);

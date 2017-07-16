@@ -28,7 +28,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
 add_library(native-lib SHARED
              src/main/cpp/native-lib.cpp
 			 src/main/cpp/RingBuffer.cpp
-			 src/main/cpp/vdecoder.cpp)
+			 src/main/cpp/vdecoder.cpp
+			 src/main/cpp/playback.cpp
+			 )
 			 
 target_include_directories(native-lib PRIVATE
 	${distribution_DIR}/include

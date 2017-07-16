@@ -12,6 +12,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -44,16 +46,81 @@ public class RecordUtility {
                 start.get(Calendar.DAY_OF_MONTH));
         return szFile;
     }
-    static public long parserFilename(String name, int type[]) {
-        long date = 1440*1000;
-        Log.d(TAG, "File ==== "+ name); //H20170626_205857.h264
-        type[0] = 5;
-        return date;
+    //return time
+    //type = event type
+    //data = data type
+    static public long parserFilename(String name, int type[], int data[]) {
+        long time = 0;
+        int dataType = EventItem.CONTENT_UNKNOWN;
+        char a = name.charAt(0);
+
+        if(a < 'A' || a > EventItem.TYPE_MAX + 'A')
+            return time;
+        type[0] = a - 'A';
+
+        //name format: H20170626_205857.h264
+        String dateRoot = name.substring(1,16);
+
+        if(dateRoot == null )
+            return time;
+        SimpleDateFormat sdfmt = new SimpleDateFormat("yyyyMMdd_hhmmss");
+
+        try {
+            Date tm = sdfmt.parse(dateRoot);
+            time = tm.getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+
+        }
+        dateRoot = name.substring(17,name.length()).toLowerCase();
+
+        if(dateRoot == null )
+            return 0;
+
+        if(dateRoot.equals("h264")) {
+            dataType = EventItem.CONTENT_VIDEO;
+        }
+        else if(dateRoot.equals("pcm"))
+            dataType = EventItem.CONTENT_AUDIO;
+        else if(dateRoot.equals("txt"))
+            dataType = EventItem.CONTENT_TEXT;
+
+        data[0] = dataType;
+        return time;
     }
-    public static FileData createFile(int type, boolean bIsVideo){
+    public static FileData createFile(Calendar time, int type, boolean bIsVideo){
         FileData fd = null;
         try {
-            fd = new FileData(type, bIsVideo);
+            fd = new FileData(time, type, bIsVideo);
+            byte header[] = new byte[4];
+            if(bIsVideo) {
+                header[0]='h';header[1]='2';header[2]='6';header[3]='4';
+                fd.write(header);
+                //fps
+                ByteBuffer ba;
+                ba = ByteBuffer.allocate(4);
+                ba.putInt(30); //30 fps assumed
+                fd.write(ba.array());
+
+            } else {
+                header[0]='g';header[1]='7';header[2]='1';header[3]='1';
+                fd.write(header);
+                //sample rate
+                ByteBuffer ba;
+                ba = ByteBuffer.allocate(4);
+                ba.putInt(8000); //8000 fps assumed
+                fd.write(ba.array());
+            }
+
+            ByteBuffer bb;
+            bb = ByteBuffer.allocate(8);
+            long data = time.getTimeInMillis();
+            bb.putLong(data);
+            fd.write(bb.array());
+            //stop time
+            data += 5*60*1000;
+            bb.putLong(data);
+            fd.write(bb.array());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -172,16 +239,18 @@ public class RecordUtility {
             public void run() {
                 while (mTmDate.getTime().getTime() <= mTmEnd) {
                     File folder = new File(RecordUtility.getWorkingFolder(), RecordUtility.getFolderName(mTmDate));
+                    Log.d(TAG, "--- search folder = "+ folder.toString());
                     if(folder.exists()){
                         //search file in the folder
                         File file[] = folder.listFiles();
                         for (File f : file){
                             String name = f.getName();
                             int type[] = {0};
-                            long date = parserFilename(name, type);
+                            int kind[] = {0};
+                            long date = parserFilename(name, type, kind);
                             if (date < mTmEnd) {
 
-                                EventItem item = new EventItem( type[0], name, date, f.getAbsolutePath());
+                                EventItem item = new EventItem( type[0], name, date, f.getAbsolutePath(), kind[0]);
                                 Message msg2 = new Message();
                                 msg2.what = MESSAGE_FOUND_ADDITEM;
                                 msg2.obj = item;

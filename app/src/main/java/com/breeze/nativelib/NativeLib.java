@@ -34,4 +34,14 @@ public class NativeLib {
      public static native void step();
      public static native void setYUVBuffer(int width, int height, int stride, byte[] buffer);
      public static native void decodeNal(ByteBuffer nalUnits, int numBytes, long timeInSec);
+
+    /** return handle of playback function **/
+    public static native long pbOpen(String path);
+    /** return current frame number **/
+    public static native int pbNextFrame(long handle);
+    /** return current frame number **/
+    public static native int pbPrevFrame(long handle);
+    /** return current frame number **/
+    public static native int pbSetPosition(long handle, int pos);
+    public static native void pbClose(long handle);
 }

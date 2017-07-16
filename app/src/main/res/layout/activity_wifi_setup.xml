@@ -3,6 +3,7 @@
 xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
+    android:background="@drawable/page_bg"
 tools:context="com.breeze.youcam.WifiSetupActivity">
 
 <LinearLayout
@@ -13,12 +14,12 @@ tools:context="com.breeze.youcam.WifiSetupActivity">
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/page_bg"
+        android:textAlignment="center"
+        android:textColor="@color/colorText2"
+        android:padding="@dimen/activity_horizontal_margin"
+        android:text = ""
         android:id="@+id/tvStatus"
-        />
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/btnScan"
         />
 
     <ListView

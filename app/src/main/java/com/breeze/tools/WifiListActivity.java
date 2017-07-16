@@ -27,10 +27,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class WifiListActivity extends Activity implements View.OnClickListener{
+public class WifiListActivity extends Activity{
 
     static String TAG = "P2pMain";
-
 
     WifiManager wifi;
     ListView lv;
@@ -39,11 +38,7 @@ public class WifiListActivity extends Activity implements View.OnClickListener{
     int size = 0;
     List<ScanResult> results;
 
-    String ITEM_NAME = "name";
-    String ITEM_STATUS = "status";
-
-    ArrayList<HashMap<String, String>> arraylist = new ArrayList<HashMap<String, String>>();
-    SimpleAdapter adapter;
+    public WifiList mAdapter = null; //must be set  by inherit class
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,19 +52,20 @@ public class WifiListActivity extends Activity implements View.OnClickListener{
         }
         Intent intent = getIntent();
         textStatus = (TextView) findViewById(R.id.tvStatus);
-        buttonScan = (Button) findViewById(R.id.btnScan);
-        buttonScan.setOnClickListener(this);
+
         lv = (ListView)findViewById(R.id.listWifi);
 
         wifi = (WifiManager) getApplicationContext().getSystemService(getApplicationContext().WIFI_SERVICE);
         if (wifi.isWifiEnabled() == false)
         {
-            Toast.makeText(getApplicationContext(), "wifi is disabled..making it enabled", Toast.LENGTH_LONG).show();
-            wifi.setWifiEnabled(true);
+            Toast.makeText(getApplicationContext(), "wifi is disabled. Now making it enabled", Toast.LENGTH_LONG).show();
+            //wifi.setWifiEnabled(true);
         }
-        this.adapter = new SimpleAdapter(this, arraylist, R.layout.list_wifi,
-                new String[] { ITEM_NAME, ITEM_STATUS }, new int[] { R.id.tvName, R.id.tvStatus });
-        lv.setAdapter(this.adapter);
+        if(mAdapter == null) {
+            Log.e(TAG, "You must set adaptor before call super.onCreate.");
+            return;
+        }
+        lv.setAdapter(mAdapter);
 
         registerReceiver(new BroadcastReceiver()
         {
@@ -78,13 +74,59 @@ public class WifiListActivity extends Activity implements View.OnClickListener{
             {
                 results = wifi.getScanResults();
                 size = results.size();
+
+                updateList();
             }
         }, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+        registerReceiver(new BroadcastReceiver()
+        {
+            @Override
+            public void onReceive(Context c, Intent intent)
+            {
+                int state = wifi.getWifiState();
+                switch (state) {
+                    case WifiManager.WIFI_STATE_DISABLED:
+                        lv.setVisibility(View.GONE);
+                        textStatus.setText("TO SEE AVAILABLE NETWORKS, \nTURN WI-FI ON.");
+                        break;
+                    case WifiManager.WIFI_STATE_ENABLED:
+                        lv.setVisibility(View.VISIBLE);
+                        textStatus.setText("Tap on the network name to connect.");
+                        break;
+                };
+                Log.d(TAG, "WiFi state = "+ state);
+            }
+        }, new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
+
     }
 
 
 
+    void updateList() {
+        //Toast.makeText(this, "Scanning....", Toast.LENGTH_SHORT).show();
+        try
+        {
+            mAdapter.resetItem();
+            size = size - 1;
+            while (size >= 0)
+            {
+                if(!results.get(size).SSID.isEmpty()) {
+                    WifiList.WifiItem item = new WifiList.WifiItem(results.get(size).SSID,
+                            results.get(size).capabilities, results.get(size).level);
+                    mAdapter.addItem(item);
+                    //Log.d("P2pMain", "scan item "+results.get(size).toString());
+                }
 
+                size--;
+
+             }
+            mAdapter.sortByLevel();
+            mAdapter.notifyDataSetChanged();
+
+        }
+        catch (Exception e)
+        { }
+    }
     public void onBack() {
     }
     @Override
@@ -98,27 +140,10 @@ public class WifiListActivity extends Activity implements View.OnClickListener{
     }
 
 
-    public void onClick(View view)
+    public void startScan()
     {
-        arraylist.clear();
         wifi.startScan();
 
-        Toast.makeText(this, "Scanning...." + size, Toast.LENGTH_SHORT).show();
-        try
-        {
-            size = size - 1;
-            while (size >= 0)
-            {
-                HashMap<String, String> item = new HashMap<String, String>();
-                item.put(ITEM_NAME, results.get(size).SSID );
-                item.put(ITEM_STATUS, results.get(size).toString());
 
-                arraylist.add(item);
-                size--;
-                adapter.notifyDataSetChanged();
-            }
-        }
-        catch (Exception e)
-        { }
     }
 }

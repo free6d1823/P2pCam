@@ -19,6 +19,7 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.breeze.tools.WifiList;
 import com.breeze.tools.WifiListActivity;
 
 import java.util.ArrayList;
@@ -34,9 +35,15 @@ public class WifiSetupActivity extends WifiListActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_wifi_setup); //must set this before super created
+        int[] imageIds = {R.drawable.wifi_n_0, R.drawable.wifi_n_1, R.drawable.wifi_n_2,
+                R.drawable.wifi_n_3,R.drawable.wifi_n_4,
+                R.drawable.wifi_p_0, R.drawable.wifi_p_1, R.drawable.wifi_p_2,
+                R.drawable.wifi_p_3,R.drawable.wifi_p_4,
+        };
+        mAdapter = new WifiList(this, R.layout.list_wifi, imageIds);
         super.onCreate(savedInstanceState);
 
-
+        startScan();
     }
     @Override
     public void onBack() {

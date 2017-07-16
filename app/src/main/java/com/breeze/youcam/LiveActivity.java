@@ -236,14 +236,16 @@ public class LiveActivity extends Activity implements P2pClient.OnP2pDataListene
     public void onVideoCallback(byte[] buffer, int length, int timestamp) {
         if (mIsRecordOn) {
             if (mVideoRecordFile == null) {
-                mVideoRecordFile = RecordUtility.createFile(EventItem.TYPE_LOCAL_VIDEO, true);
+                Calendar tmNow = Calendar.getInstance();
+
+                mVideoRecordFile = RecordUtility.createFile(tmNow, EventItem.TYPE_LOCAL_VIDEO, true);
                 if (mVideoRecordFile == null)
                     return;
                 Log.d(TAG, "Create video file: "+mVideoRecordFile.getFileName());
                 //open audio
                 if(mAudioRecordFile != null)
                     mAudioRecordFile.close();
-                mAudioRecordFile = RecordUtility.createFile(EventItem.TYPE_LOCAL_VIDEO, false);
+                mAudioRecordFile = RecordUtility.createFile(tmNow, EventItem.TYPE_LOCAL_VIDEO, false);
                 if (mAudioRecordFile == null)
                     Log.e(TAG, "Failed to create audio file: "+mAudioRecordFile.getFileName());
             }

@@ -19,15 +19,28 @@
 
 #define  LOG_TAG    "native-lib"
 extern "C" {
-    JNIEXPORT jstring JNICALL Java_com_breeze_nativelib_NativeLib_getVersion(JNIEnv * env, jobject obj);
-    JNIEXPORT void JNICALL Java_com_breeze_nativelib_NativeLib_init(JNIEnv * env, jobject obj,  jint width, jint height);
-    JNIEXPORT void Java_com_breeze_nativelib_NativeLib_step(JNIEnv * env, jobject obj);
-    JNIEXPORT void Java_com_breeze_nativelib_NativeLib_setYUVBuffer(JNIEnv * env, jobject obj,
-                                            jint width, jint height, jint stride, jbyteArray array);
-    JNIEXPORT void Java_com_breeze_nativelib_NativeLib_decodeNal(JNIEnv * env, jobject obj,
-                                                                       jobject nal_units, jint num_bytes, jlong timeInSec);
+JNIEXPORT jstring JNICALL Java_com_breeze_nativelib_NativeLib_getVersion(JNIEnv *env, jobject obj);
+JNIEXPORT void JNICALL
+Java_com_breeze_nativelib_NativeLib_init(JNIEnv *env, jobject obj, jint width, jint height);
+JNIEXPORT void Java_com_breeze_nativelib_NativeLib_step(JNIEnv *env, jobject obj);
+JNIEXPORT void Java_com_breeze_nativelib_NativeLib_setYUVBuffer(JNIEnv *env, jobject obj,
+                                                                jint width, jint height,
+                                                                jint stride, jbyteArray array);
+JNIEXPORT void Java_com_breeze_nativelib_NativeLib_decodeNal(JNIEnv *env, jobject obj,
+                                                             jobject nal_units, jint num_bytes,
+                                                             jlong timeInSec);
+/** playback API **/
+JNIEXPORT jlong Java_com_breeze_nativelib_NativeLib_pbOpen(JNIEnv *env, jobject obj, jstring path);
+JNIEXPORT jint
+Java_com_breeze_nativelib_NativeLib_pbNextFrame(JNIEnv *env, jobject obj, jlong handle);
+JNIEXPORT jint
+Java_com_breeze_nativelib_NativeLib_pbPrevFrame(JNIEnv *env, jobject obj, jlong handle);
+JNIEXPORT jint
+Java_com_breeze_nativelib_NativeLib_pbSetPosition(JNIEnv *env, jobject obj, jlong handle, jint pos);
+JNIEXPORT void
+Java_com_breeze_nativelib_NativeLib_pbClose(JNIEnv *env, jobject obj, jlong handle);
+}
 
-};
 JNIEXPORT jstring JNICALL
 Java_com_breeze_nativelib_NativeLib_getVersion(JNIEnv *env, jobject /* this */) {
     std::string ver = "NativeLib v. 1.0.0.0";
@@ -346,7 +359,9 @@ JNIEXPORT void Java_com_breeze_nativelib_NativeLib_decodeNal(JNIEnv * env, jobje
 		if(pFrame) {
 			unsigned char *pDest = (unsigned char *) pFrame->pBuffer;
 			long ret = vdecoder_decodeFrameToDirectBuffer(g_decoderHandle, pDest, length);	
-			
+			if( ret <0){
+                LOGE("vdecoder_decodeFrameToDirectBuffer error %ld", ret);
+            }
 			returnBuffer(ghRingBuffer, pFrame);
 		}
 	

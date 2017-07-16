@@ -69,7 +69,13 @@ DECODE_HANDLE vdecoder_init(jint color_format) {
     ctx->dst_frame = av_frame_alloc();
 
     int ret = avcodec_open2(ctx->codec_ctx, ctx->codec, NULL);
-
+    if (ret != 0){
+        av_free(ctx->codec_ctx);
+        av_free(ctx->src_frame);
+        av_free(ctx->dst_frame);
+        free(ctx);
+        ctx = NULL;
+    }
 	return (DECODE_HANDLE) ctx;
 }
 
@@ -127,43 +133,44 @@ jint vdecoder_getOutputByteSize(DECODE_HANDLE h) {
 }
 
 jlong vdecoder_decodeFrameToDirectBuffer(DECODE_HANDLE h, void *out_buf, long out_buf_len) {
-  DecoderContext * ctx = (DecoderContext *)h;
-  if (!ctx->frame_ready) {
-	   LOGE("Frame is not ready...");
-    return -1;
-  }
+    DecoderContext *ctx = (DecoderContext *) h;
+    if (!ctx->frame_ready) {
+        LOGE("Frame is not ready...");
+        return -1;
+    }
 
-  if (out_buf == NULL) {
-    LOGE("Error getting direct buffer address");
-    return -2;
-  }
+    if (out_buf == NULL) {
+        LOGE("Error getting direct buffer address");
+        return -2;
+    }
 
-  int pic_buf_size = avpicture_get_size((enum AVPixelFormat)ctx->color_format,
-                                        ctx->codec_ctx->width, ctx->codec_ctx->height);
-  if (out_buf_len < pic_buf_size) {
-    LOGE("Input buffer too small");
-    return pic_buf_size;
-  }
+    int pic_buf_size = avpicture_get_size((enum AVPixelFormat) ctx->color_format,
+                                          ctx->codec_ctx->width, ctx->codec_ctx->height);
+    if (out_buf_len < pic_buf_size) {
+        LOGE("Input buffer too small");
+        return pic_buf_size;
+    }
 
-  if (ctx->convert_ctx == NULL) {
-      ctx->convert_ctx = sws_getContext(ctx->codec_ctx->width, ctx->codec_ctx->height,
-                                        ctx->codec_ctx->pix_fmt,
-                                        ctx->codec_ctx->width,
-                                        ctx->codec_ctx->height,
-                                        (enum AVPixelFormat) ctx->color_format,
-                                        SWS_FAST_BILINEAR, NULL, NULL, NULL);
-  }
+    if (ctx->convert_ctx == NULL) {
+        ctx->convert_ctx = sws_getContext(ctx->codec_ctx->width, ctx->codec_ctx->height,
+                                          ctx->codec_ctx->pix_fmt,
+                                          ctx->codec_ctx->width,
+                                          ctx->codec_ctx->height,
+                                          (enum AVPixelFormat) ctx->color_format,
+                                          SWS_FAST_BILINEAR, NULL, NULL, NULL);
+    }
 
-  int ret = avpicture_fill((AVPicture*)ctx->dst_frame, (uint8_t*)out_buf,
-                   (enum AVPixelFormat) ctx->color_format, ctx->codec_ctx->width,
-                   ctx->codec_ctx->height);
+    int ret = avpicture_fill((AVPicture *) ctx->dst_frame, (uint8_t *) out_buf,
+                             (enum AVPixelFormat) ctx->color_format, ctx->codec_ctx->width,
+                             ctx->codec_ctx->height);
 
 
-  ret = sws_scale(ctx->convert_ctx, (const uint8_t**)ctx->src_frame->data, ctx->src_frame->linesize, 0, ctx->codec_ctx->height,
-        ctx->dst_frame->data, ctx->dst_frame->linesize);
-
-  //LOGI("sws_scale: the height of the output slice = %d", ret);
-
+    ret = sws_scale(ctx->convert_ctx, (const uint8_t **) ctx->src_frame->data,
+                    ctx->src_frame->linesize, 0, ctx->codec_ctx->height,
+                    ctx->dst_frame->data, ctx->dst_frame->linesize);
+    if (ret <= 0) {
+    LOGE("sws_scale: the height of the output slice = %d", ret);
+}
   ctx->frame_ready = 0;
 
   if (ctx->src_frame->pkt_pts == AV_NOPTS_VALUE) {

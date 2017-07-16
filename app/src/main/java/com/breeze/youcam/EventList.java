@@ -75,6 +75,8 @@ public class EventList extends BaseAdapter {
 
             timeView.setText(di.timeString());
 
+            TextView tvKind = (TextView) itemView.findViewById(R.id.tvKind);
+            tvKind.setText(Integer.toString(di.ctype));
             noteView.setText(di.note);
         } finally {
             unlock();

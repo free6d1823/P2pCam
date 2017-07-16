@@ -37,10 +37,11 @@
         <activity
             android:name=".PairingActivity"
             android:label="@string/title_activity_pairing"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".WifiSetupActivity"
-            android:label="@string/title_activity_wifi_setup"></activity>
+            android:label="@string/title_activity_wifi_setup" />
+        <activity android:name=".PlaybackActivity"></activity>
     </application>
 
 </manifest>

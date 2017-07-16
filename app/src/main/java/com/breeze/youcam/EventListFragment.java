@@ -82,11 +82,11 @@ public class EventListFragment extends BaseFragment implements RecordUtility.OnD
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 EventItem di = (EventItem)mEventList.getItem(position);
-                //if(di.status >= di.STATUS_CONNECTED) {
-                //Intent intent = new Intent(MainActivity.gApp, LiveActivity.class);
-               // intent.putExtra(MainActivity.EXTRA_DEVICE_DETAIL, di.uuid);
-                //startActivity(intent);
-                //}//
+                if(di.ctype == EventItem.CONTENT_VIDEO) {
+                    Intent intent = new Intent(MainActivity.gApp, PlaybackActivity.class);
+                    intent.putExtra("EventItem", di);
+                    startActivity(intent);
+                }
             }
         });
         //
