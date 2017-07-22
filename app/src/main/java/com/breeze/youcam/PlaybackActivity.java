@@ -14,6 +14,7 @@ import android.widget.SeekBar;
 
 import com.breeze.nativelib.GL2JNIView;
 import com.breeze.nativelib.NativeLib;
+import com.breeze.tools.Utility;
 import com.tutk.IOTC.IOTCAPIs;
 import com.tutk.IOTC.st_SearchDeviceInfo;
 
@@ -29,6 +30,14 @@ import java.util.List;
 public class PlaybackActivity extends Activity {
     GL2JNIView mGLView;
     EventItem mEventItem = null;
+    FileInputStream mInputStream = null;
+    int mTotalBytes = 0;
+    int mCurrentByte = 0;
+    long mStartTime;
+
+    int mFps = 0;
+    final int FRAME_HEADER = 8; //length+timestamp
+    final int FILE_HEADER = 16; //4CC+fps+time_in_mili
     ProgressBar mProgressBar;
     String TAG = "P2pMain";
     final int STATUS_BIT_NONE = 0;      // b0   0- no media;1- available
@@ -39,6 +48,14 @@ public class PlaybackActivity extends Activity {
     final int MASK_PLAYING_STATUS = 0x03; //11 playing 01 stop
     ProgressBar mPositionBar;
     int mStatus = 0;
+    public class MediaFile{
+        public long startTime;
+        public long endTime;
+        public long currentTime;
+        public FileInputStream is;
+
+    }
+    MediaFile mCurrentMedia = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,8 +65,7 @@ public class PlaybackActivity extends Activity {
         mEventItem = (EventItem) getIntent().getSerializableExtra("EventItem");
         mStatus = STATUS_BIT_NONE;
         mPositionBar = (ProgressBar) findViewById(R.id.positionBar);
-        mPositionBar.setMax(100);
-        mPositionBar.setProgress(0);
+
         if(mEventItem != null) {
             startLoadVideo();
             Log.d(TAG, "Now loading .. " + mEventItem.note);
@@ -71,6 +87,8 @@ public class PlaybackActivity extends Activity {
     }
     public final int MESSAGE_LOAD_OK = 1;
     public final int MESSAGE_LOAD_FAILED = 2;
+    public final int MESSAGE_PLAY_PROGRESS_UPDATE = 3;
+    public final int MESSAGE_PLAY_ERROR = 4;
     Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -78,52 +96,116 @@ public class PlaybackActivity extends Activity {
             switch(msg.what){
                 case MESSAGE_LOAD_OK:
                     mStatus = STATUS_BIT_READY;
+                    mPositionBar.setVisibility(View.VISIBLE);
                     break;
                 case MESSAGE_LOAD_FAILED:
                     mStatus = STATUS_BIT_NONE;
-
+                    mPositionBar.setVisibility(View.GONE);
                     break;
+                case MESSAGE_PLAY_PROGRESS_UPDATE:
+                    mPositionBar.setProgress(mCurrentByte);
+                    break;
+                case MESSAGE_PLAY_ERROR:
+                    mStatus = STATUS_BIT_READY; //stop
+                    updateUiButtons();
+                    break;
+
             }
             updateUiButtons();
         }
 
     };
-    byte mInputBuffer[] = null;
-    byte[][] mNalUnits = null;
-    boolean openFile(String path) {
-        try {
-            FileInputStream is = new FileInputStream(path);
 
-            mInputBuffer = new byte[is.available()];
-            is.read(mInputBuffer);
-            is.close();
-            Log.d(TAG, "load file length = " + mInputBuffer.length);
+    boolean decodeOneFrame(byte[] buffer, int time){
+        ByteBuffer bits = ByteBuffer.allocateDirect(buffer.length);
+        bits.put(buffer, 0, buffer.length);
+        bits.flip();
+        NativeLib.decodeNal(bits, buffer.length, time / 1000);
+        return true;
+    }
+    boolean openFile(String path) {
+        byte[] header = new byte[4];
+        try {
+            mInputStream = new FileInputStream(path);
+            mTotalBytes = mInputStream.available();
+            if (mTotalBytes <= FILE_HEADER) {
+                Log.e(TAG, "File no frame data: "+mTotalBytes);
+                mInputStream = null;
+                return false;
+            }
+            //check file header
+            mInputStream.read(header);
+
+            if (header[0] != 'h' || header[1] != '2' || header[2] != '6' || header[3] != '4')
+            {
+                Log.e(TAG, "Not a recognized video file: "+path);
+                mInputStream = null;
+                return false;
+            }
+            mInputStream.read(header);
+            mFps = Utility.byteArrayToInt(header);
+            Log.d(TAG, "fps: "+mFps);
+            byte[] data8 = new byte[8];
+            mInputStream.read(data8);
+            mStartTime = Utility.byteArrayToLong(data8);
+            mTotalBytes -= FILE_HEADER;
+            mCurrentByte = 0;
+            mPositionBar.setMax(mTotalBytes);
+            mPositionBar.setProgress(mCurrentByte);
+Log.d(TAG, "Open file length = "+mTotalBytes + "bytes");
         } catch (IOException e) {
             Log.d(TAG, e.toString());
             return false;
         }
-        mNalUnits = splitNalUnits(mInputBuffer);
 
-        return (mNalUnits!=null && mNalUnits.length >0);
+        return true;
     }
+    void startPlay() {
+        Thread palayingFile = new Thread( new Runnable() {
 
-    boolean play() {
-        if(mNalUnits==null)
-        {
-            Log.d(TAG, "mInputBuffer error length="+mInputBuffer.length);
-            return false;
+            @Override
+            public void run() {
+                if (mInputStream == null)
+                    return;
+                byte[] pLength = new byte[4];
+                byte[] pTimeStamp = new byte[4];
+                try {
+                    while (mCurrentByte < mTotalBytes) {
+                        mInputStream.read(pLength);
+                        mInputStream.read(pTimeStamp);
+                        int length = Utility.byteArrayToInt(pLength);
+                        int time = Utility.byteArrayToInt(pTimeStamp);
+                        byte[] inputBuffer = new byte[length];
+                        mInputStream.read(inputBuffer);
+                        Log.d(TAG, "decode one frame: " + time + ":" + length);
+                        if( ! decodeOneFrame(inputBuffer, time))
+                            break;
+                        mCurrentByte += (length +FRAME_HEADER);
+                        //update position
+                        Message msg = new Message();
+                        msg.what = MESSAGE_PLAY_PROGRESS_UPDATE;
+                        mHandler.sendMessage(msg);
+                        //check mode and action
+                        if((mStatus & STATUS_BIT_PLAY) == 0)
+                            break;
+                    }
 
-        }
-        Calendar c;
-        ByteBuffer bits;
-        for (int i = 0; i < mNalUnits.length; i++) {
-            c = Calendar.getInstance();
-            bits = ByteBuffer.allocateDirect(mNalUnits[i].length);
-            bits.put(mNalUnits[i], 0, mNalUnits[i].length);
-            bits.flip();
-            NativeLib.decodeNal(bits, mNalUnits[i].length, c.getTimeInMillis() / 1000);
-        }
-            return true;
+                } catch(IOException e) {
+                    e.printStackTrace();
+                    //force stop
+                    Message msg = new Message();
+                    msg.what = MESSAGE_PLAY_ERROR;
+                    mHandler.sendMessage(msg);
+                }
+                try {
+                    mInputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, "palayingFile");
+
+        palayingFile.start();
     }
     void startLoadVideo () {
         mProgressBar.setVisibility(View.VISIBLE);
@@ -217,11 +299,13 @@ public class PlaybackActivity extends Activity {
     }
     public void onClickPlay(View v) {
         mStatus = STATUS_BIT_PLAY|STATUS_BIT_READY;
-        mPositionBar.setProgress(mPositionBar.getProgress() + 10);
+        mPositionBar.setProgress(0);
+        startPlay();
         updateUiButtons();
     }
     public void onClickStop(View v) {
         mStatus = STATUS_BIT_READY;
+        //play thread will stop
         updateUiButtons();
     }
     public void onClickBegin(View v) {

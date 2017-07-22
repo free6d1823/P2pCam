@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.breeze.tools.FileData;
 import com.breeze.tools.RecordUtility;
+import com.breeze.tools.Utility;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -249,7 +250,10 @@ public class LiveActivity extends Activity implements P2pClient.OnP2pDataListene
                 if (mAudioRecordFile == null)
                     Log.e(TAG, "Failed to create audio file: "+mAudioRecordFile.getFileName());
             }
-            mVideoRecordFile.write(buffer);
+
+            mVideoRecordFile.write(Utility.intToByteArray(length), 4);
+            mVideoRecordFile.write(Utility.intToByteArray(timestamp), 4);
+            mVideoRecordFile.write(buffer, length);
             //check if need close
             mVideoRecordFile = RecordUtility.checkFileClose(mVideoRecordFile);
             if(null == mVideoRecordFile){
@@ -270,7 +274,10 @@ public class LiveActivity extends Activity implements P2pClient.OnP2pDataListene
             if (mAudioRecordFile == null) {
                 return; //audio must always follow video
             }
-            mAudioRecordFile.write(buffer);
+            if (length >= buffer.length) {
+                Log.e(TAG, "Audio data "+ length + " bytes, out of buffer "+ buffer.length);
+            }
+            mAudioRecordFile.write(buffer, length);
 
         }
     }

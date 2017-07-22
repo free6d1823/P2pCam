@@ -24,9 +24,10 @@ public class FileData {
         String date = RecordUtility.getFolderName(tmNow);
 
         File folder = new File(RecordUtility.getWorkingFolder(), date);
-        if(!folder.exists())
-            if(!folder.mkdirs())
-                Log.e(TAG, "folder is exist="+folder.exists());
+        if(!folder.exists()) {
+            if (!folder.mkdirs())
+                Log.e(TAG, "folder is exist=" + folder.exists());
+        }
         String ext = (bIsVideo)?"h264":"pcm";
         String fileName = String.format("%c%s_%02d%02d%02d.%s",'A'+type, date,
                 tmNow.get(Calendar.HOUR_OF_DAY), tmNow.get(Calendar.MINUTE), tmNow.get(Calendar.SECOND),
@@ -36,7 +37,7 @@ public class FileData {
 
         fos = new FileOutputStream(file);
         tmStart = tmNow.getTimeInMillis();
-
+Log.e(TAG, "... Create file "+file.toString());
     }
     public void close() {
         if(fos!= null) try {
@@ -46,10 +47,10 @@ public class FileData {
             Log.e(TAG, e.toString());
         }
     }
-    public void write(byte[] b) {
+    public void write(byte[] b, int length) {
         if( fos != null)
             try {
-                fos.write(b);
+                fos.write(b, 0, length);
             } catch (IOException e) {
                 Log.e(TAG, e.toString());
             }

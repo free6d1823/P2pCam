@@ -95,32 +95,33 @@ public class RecordUtility {
             byte header[] = new byte[4];
             if(bIsVideo) {
                 header[0]='h';header[1]='2';header[2]='6';header[3]='4';
-                fd.write(header);
+                fd.write(header, 4);
                 //fps
                 ByteBuffer ba;
                 ba = ByteBuffer.allocate(4);
                 ba.putInt(30); //30 fps assumed
-                fd.write(ba.array());
+                fd.write(ba.array(),4);
 
             } else {
                 header[0]='g';header[1]='7';header[2]='1';header[3]='1';
-                fd.write(header);
+                fd.write(header, 4);
                 //sample rate
                 ByteBuffer ba;
                 ba = ByteBuffer.allocate(4);
                 ba.putInt(8000); //8000 fps assumed
-                fd.write(ba.array());
+                fd.write(ba.array(), 4);
             }
 
             ByteBuffer bb;
             bb = ByteBuffer.allocate(8);
             long data = time.getTimeInMillis();
+            Log.e(TAG, "putLong = "+ bb.array().length);
+
             bb.putLong(data);
-            fd.write(bb.array());
-            //stop time
-            data += 5*60*1000;
-            bb.putLong(data);
-            fd.write(bb.array());
+            Log.e(TAG, "data = "+ data);
+
+            fd.write(bb.array(), 8);
+
         } catch (IOException e) {
             e.printStackTrace();
         }

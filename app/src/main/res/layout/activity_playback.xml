@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/panel_bg"
+    tools:context="com.breeze.youcam.PlaybackActivity">
+    <com.breeze.nativelib.GL2JNIView
+        android:id="@+id/viewVideo"
+        android:layout_width="381dp"
+        android:layout_height="381dp"
+        android:layout_below="@+id/tvTitle"
+        android:keepScreenOn="true" />
+
+    <ProgressBar
+        android:id="@+id/positionBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="100" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="6">
+        <Button
+            android:id="@+id/btnBegin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/play_begin"
+            android:layout_weight="1"
+            android:onClick="onClickBegin"
+             />
+        <Button
+            android:id="@+id/btnBackward"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/play_backward"
+            android:onClick="onClickBackward"
+            />
+    <Button
+        android:id="@+id/btnPlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/play_play"
+        android:onClick="onClickPlay"
+        android:layout_weight="1"
+         />
+        <Button
+            android:id="@+id/btnPause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/play_pause"
+            android:layout_weight="1"
+            android:onClick="onClickStop"
+            />
+    <Button
+        android:id="@+id/btnForward"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/play_forward"
+        android:layout_weight="1"
+        android:onClick="onClickForward"
+        />
+        <Button
+            android:id="@+id/btnEnd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/play_end"
+            android:layout_weight="1"
+            android:onClick="onClickEnd"
+             />
+    </LinearLayout>
+    <FrameLayout
+        android:id="@+id/progressBarHolder"
+
+        android:animateLayoutChanges="true"
+
+        android:clickable="true"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ProgressBar
+            android:layout_gravity="center"
+            android:id="@+id/progress_bar"
+            android:alpha="0.9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:progressDrawable="@drawable/progress_large_white" />
+    </FrameLayout>
+</LinearLayout>
