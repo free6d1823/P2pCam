@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -92,7 +93,16 @@ public class EventList extends BaseAdapter {
     }
     public void removeItem(int pos)
     {
+        lock();
+        EventItem di = (EventItem)mEventArray.get(pos);
+        try {
+            File file = new File(di.note);
+            file.delete();
+        } catch(Exception e){
+            e.printStackTrace();
+        }
         mEventArray.remove(pos);
+        unlock();
     }
     public void resetItem()
     {

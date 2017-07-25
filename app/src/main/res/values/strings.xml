@@ -20,6 +20,7 @@
     <string name="action_add">Add</string>
     <string name="action_start">Start</string>
     <string name="action_stop">Stop</string>
+    <string name="action_play">Play</string>
     <string name="title_activity_detail">Device Information</string>
     <string name="title_page1">YouCam</string>
     <string name="title_page2">Event list</string>

@@ -6,12 +6,15 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.breeze.tools.RecordUtility;
@@ -73,8 +76,8 @@ public class EventListFragment extends BaseFragment implements RecordUtility.OnD
         lv.setOnItemLongClickListener(new ListView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-
-                return false;
+                createContextMenu(position, view);
+                return true; //return true, event handled. don't do short click
             }
 
         });
@@ -146,5 +149,55 @@ public class EventListFragment extends BaseFragment implements RecordUtility.OnD
             mEventList.notifyDataSetChanged();
         }
         return false;
+    }
+    private static final int MENU_PLAY = Menu.FIRST;
+    private static final int MENU_REMOVE = Menu.FIRST + 1;
+    private static final int MENU_PROPERTY = Menu.FIRST + 2;
+
+    void createContextMenu(int pos, View v){
+        EventItem di = (EventItem)mEventList.getItem(pos);
+        if (di == null)
+            return;
+        PopupMenu menu = new PopupMenu(MainActivity.gApp, v);
+
+        menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                int act = item.getItemId();
+                int k = item.getGroupId();
+
+                EventItem hdi = (EventItem)mEventList.getItem(k);
+                Message msg;
+                if(hdi == null)
+                    return false;
+                switch(act){
+                    case MENU_PLAY:
+                        if(hdi.ctype == EventItem.CONTENT_VIDEO) {
+                            Intent intent = new Intent(MainActivity.gApp, PlaybackActivity.class);
+                            intent.putExtra("EventItem", hdi);
+                            startActivity(intent);
+                        }
+                        break;
+                    case MENU_REMOVE:
+                        mEventList.removeItem(k);
+                        mEventList.notifyDataSetChanged();
+                        break;
+                    case MENU_PROPERTY:
+                        //showDeviceDetail(hdi);
+                        break;
+                }
+                return false;
+            }
+        });
+
+        if (di.ctype == EventItem.CONTENT_VIDEO) {
+            menu.getMenu().add(pos, MENU_PLAY, Menu.NONE, R.string.action_play);
+        }
+        menu.getMenu().add(pos, MENU_REMOVE, Menu.NONE, R.string.action_remove);
+
+        menu.getMenu().add(pos, MENU_PROPERTY, Menu.NONE, R.string.action_detail);
+
+        menu.show();;
+
     }
 }

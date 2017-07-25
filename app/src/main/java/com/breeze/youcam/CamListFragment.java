@@ -96,7 +96,7 @@ public class CamListFragment extends BaseFragment {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 createContextMenu(position, view);
-                return false;
+                return true; //return true, event handled. don't do short click
             }
 
         });
